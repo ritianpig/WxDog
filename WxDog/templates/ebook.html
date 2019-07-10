@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination1.html' import render_pager, render_pagination %}
+
+{% block content %}
+    <div class="container">
+    <div class="page-header">
+        {% for message in messages %}
+            [[ message.id ]]<br>
+        {% endfor %}
+        [[ render_pagination(pagination) ]]
+    </div>
+    </div>
+{% endblock %}

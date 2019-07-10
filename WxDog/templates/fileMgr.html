@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block head %}
+    [[ super() ]]
+        <link rel="stylesheet" type="text/css" href="[[ url_for('static', filename='css/showPic.css') ]]" />
+        <link rel="stylesheet" type="text/css" href="[[ url_for('static', filename='css/search.css') ]]" />
+        <link rel="stylesheet" type="text/css" href="[[ url_for('static', filename='css/checkbox.css') ]]" />
+        <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+        <script src="[[ url_for('static', filename='js/jquery.lazyload.min.js')]]"></script>
+        <script src="[[ url_for('static', filename='js/WxDog.js') ]]"></script>
+
+        <script>
+            jQuery(document).ready(function ($) {
+            $("img").lazyload({
+                placeholder: "http://jileiba.com/wp-includes/images/loading03.gif",
+                effect: "fadeIn"
+            });
+            });
+        </script>
+
+        <script>
+        jQuery(document).ready(function ($) {
+            $("#delPic").click(function () {
+                var data = [];
+                $(":checkbox[name='box']:checked").each(function () {
+                    data.push($(this).val());
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "/fileMgr/delPic",
+                    cache: false,
+                    async: true,
+                    processData: false,
+                    contentType: "application/json;charset=utf-8",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success:function (message) {
+                        if(message.message== "1") {
+                            console.log(message);
+                            alert("删除成功即将刷新页面")
+                        }
+                        window.location.reload()
+                    },
+                    error:function () {
+                        alert("删除失败")
+                    }
+                });
+            });
+        });
+        </script>
+{% endblock %}
+
+{% block content %}
+    <section class="webdesigntuts-workshop">
+	<form>
+		<input type="search" placeholder="What are you looking for?" id="seaPic">
+		<button type="button" onclick="searchPic()">Search</button>
+        <button type="button" value="删除" id="delPic">删除</button>
+	</form>
+    </section>
+
+    <div class="wrapper">
+        <ul id="showPic">
+            {% for pic in pics %}
+                <li>
+                    <a href=[["http://127.0.0.1:5000/static/pic/" + pic ]]>
+                        <div class="main">
+                            {% if [[ pic|getSuffix ]] == [[".MP4"]] or [[ pic|getSuffix ]] == [[".mp4"]] or [[ pic|getSuffix ]] == [[".MOV"]] %}
+                                <video class="scrollLoading" height="180px" width="180px" src=[["http://127.0.0.1:5000/static/pic/" + pic ]] controls="controls">不支持此视频</video>
+                            {% else %}
+                                <img class="scrollLoading" height="180px" width="180px" data-original=[["http://127.0.0.1:5000/static/pic/" + pic ]]>
+                            {% endif %}
+                        </div>
+                        <div class="checkbox" style="position:absolute;top:0;right:0;z-index:1000">
+                           <input id="box" type="checkbox" name="box" value=[[pic]]>
+                        </div>
+                        <p class="pstyle">[[ pic ]]</p>
+                    </a>
+
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="[[ url_for('static', filename='js/showPic.js') ]]"></script>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

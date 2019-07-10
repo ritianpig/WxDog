@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block head %}
+    [[ super() ]]
+    [[ dropzone.load_css() ]]
+    [[ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') ]]
+{% endblock %}
+
+{% block content %}
+    [[ dropzone.create(action='fileMgr.uploads') ]]
+    [[ dropzone.load_js() ]]
+    [[ dropzone.config() ]]
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{#{% from 'bootstrap/pagination1.html' import render_pager, render_pagination %}#}
+{% block head %}
+    [[ super() ]]
+        <link type="text/css" rel="stylesheet" href="[[ url_for('static', filename='css/table.css') ]]" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" href="[[ url_for('static', filename='css/pagination.css') ]]" />
+        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
+        <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="[[ url_for('static', filename='js/jqPaginator.min.js') ]]"></script>
+        <script src="[[ url_for('static', filename='js/WxDog.js') ]]"></script>
+
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <div class="mtb10 clearfix" id="btn-operation">
+                    <button type="button" class="btn btn-info btn-lg" onclick="add()">新增记录</button>
+                    <button type="button" class="btn btn-success btn-lg" onclick="reload()">刷新当前</button>
+                    <span class="r-f search-style">
+                        <input id="search" type="text" placeholder="输入关键字查询" value="" name="searchText"  class="input-text" /><a href="javascript:search();" class="btn btn-blue btnEvent">搜索</a>
+                    </span>
+                </div>
+                <table class="table_list table_striped table table-bordered  table-hover" id="tableList" style="width: 100%;" cellpadding="0">
+                        <thead align="center">
+                            <tr>
+                                <th>电子书序号</th>
+                                <th>电子书分类</th>
+                                <th>电子书标题</th>
+                                <th>电子书简介</th>
+                                <th>封皮地址</th>
+                                <th>价格</th>
+                                <th>总章节数</th>
+                                <th>是否付费</th>
+                                <th>免费试读</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="a">
+
+                        </tbody>
+                </table>
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    x
+                                </button>
+                                <h4 class="modal-title" id="myModalLabel">
+                                    修改电子书信息
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <form class="form-horizontal" role="form" id="modal-content">
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">电子书id:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in1">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">分类名:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in2">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">电子书标题:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in3">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">简介:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in4">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">封皮地址:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in5">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">价格:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in6">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">章节数:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in7">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">是否付费:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in8">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">免费试读:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="in9">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                </button>
+                                <input type="button" class="btn btn-primary" id="modalevent" value="提交更改" onclick="update()"/>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+
+                <form id="form2" runat="server">
+                    <div style="text-align: center">
+                        <ul class="pagination" id="pagination">
+                        </ul>
+                        <input type="hidden" id="PageCount" runat="server" />
+                        <input type="hidden" id="PageSize" runat="server" value="8" />
+                        <input type="hidden" id="countindex" runat="server" value="10"/>
+                        <!--设置最多显示的页码数 可以手动设置 默认为7-->
+                        <input type="hidden" id="visiblePages" runat="server" value="7" />
+                    </div>
+                </form>
+        </div>
+    </div>
+
+    <script>
+        $.jqPaginator('#pagination', {
+            onPageChange: function (num, type) {
+                if (type == "change") {
+                    $().ready( function () {
+                        reqdata(num, type)
+                    });
+                }
+                else {
+                    $().ready(function () {
+                        reqdata("1", type)
+                    })
+                }
+            },
+            totalPages: parseInt($("#countindex").val()),
+            visiblePages: parseInt($("#visiblePages").val()),
+            pageSize: parseInt($("#PageSize").val()),
+            currentPage: 1,
+            first: '<li class="first"><a href="javascript:;">首页</a></li>',
+            prev: '<li class="prev"><a href="javascript:;"><i class="arrow arrow2"></i>上一页</a></li>',
+            next: '<li class="next"><a href="javascript:;">下一页<i class="arrow arrow3"></i></a></li>',
+            last: '<li class="last"><a href="javascript:;">末页</a></li>',
+            page: '<li class="page"><a href="javascript:;">{{page}}</a></li>',
+
+        });
+    </script>
+{% endblock %}
